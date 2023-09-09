@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices.JavaScript;
@@ -10,10 +11,7 @@ class TCPServer
 {
     static void Main()
     {
-
-
-        Queue<String> nachrichten = new Queue<string>();
-
+        Queue<Tuple<String, TcpClient>> nachrichten = new Queue<Tuple<string, TcpClient>>();
 
         // Starten Sie eine Task und übergeben Sie den Parameter
         Task task = Task.Run(() => DoWork(nachrichten));
@@ -25,9 +23,10 @@ class TCPServer
 
     }
 
-    static void DoWork(Queue<String> nachrichten) {
+    static void DoWork(Queue<Tuple<String, TcpClient>> nachrichten) {
         while (true)
         {
+            bool isJson = true;
             Console.WriteLine("Es existieren in der Queue " + nachrichten.Count + " Nachrichten.");
             if (nachrichten.Count == 0)
             {
@@ -36,26 +35,19 @@ class TCPServer
                 return;
             }
 
-            String nachricht;
+            Tuple<string, TcpClient> nachricht;
             lock (nachrichten)
             {
                 nachricht = nachrichten.Dequeue();
             }
             // Deserialisieren Sie den JSON-String in ein JSON-Objekt
             // Deserialisieren Sie den JSON-String in ein JSON-Objekt
-            JsonDocument jsonDoc = JsonDocument.Parse(nachricht);
-
-
-            // Zugriff auf Werte im JSON-Objekt
-            JsonElement root = jsonDoc.RootElement;
-            string name = root.GetProperty("Name").GetString();
-            int age = root.GetProperty("Age").GetInt32();
-            string city = root.GetProperty("City").GetString();
-            Console.WriteLine("Marco Kittel ist der beste!");
-            Console.WriteLine($"Name: {name}");
-            Console.WriteLine($"Age: {age}");
-            Console.WriteLine($"City: {city}");
+           
+                JsonNachricht jsonNachricht = new JsonNachricht();
+                jsonNachricht.ausgabe(nachricht);
+            
+            nachricht.Item2.Close();
         }
-  
+
     }
 }

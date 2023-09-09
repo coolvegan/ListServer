@@ -7,8 +7,8 @@ namespace EssensbestellServer
 {
 	public class Zuhoerer
 	{
-        private Queue<String> warteschlage;
-        public Zuhoerer(Queue<String> warteSchlange)
+        private Queue<Tuple<String, TcpClient>> warteschlage;
+        public Zuhoerer(Queue<Tuple<String, TcpClient>> warteSchlange)
         {
             this.warteschlage = warteSchlange;
         }
@@ -37,9 +37,6 @@ namespace EssensbestellServer
                     // Warte auf eine eingehende Verbindung
                     TcpClient client = listener.AcceptTcpClient();
                     Console.WriteLine("Client verbunden.");
-
-
-           
                     NetworkStream stream = client.GetStream();
 
                     // Puffer für eingehende Daten
@@ -50,24 +47,9 @@ namespace EssensbestellServer
                     while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         string nachricht = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                        Console.WriteLine("Nachricht vom Client: " + nachricht);
-                        warteschlage.Enqueue(nachricht);
+                        warteschlage.Enqueue(new Tuple<string, TcpClient>(nachricht.Trim(), client));
+                        Console.WriteLine("Nachricht vom Client: "+nachricht);
                     }
-
-                  
-
-                    // Verarbeite die Verbindung in einem separaten Thread (optional)
-                    // Hier wird die Verarbeitung in der aktuellen Methode durchgeführt.
-
-                    // Sende eine Bestätigungsnachricht an den Client
-                    string message = "Verbindung erfolgreich hergestellt.";
-                    byte[] data = Encoding.ASCII.GetBytes(message);
-                    stream = client.GetStream();
-                    stream.Write(data, 0, data.Length);
-
-                    // Schließe die Verbindung zum Client
-                    client.Close();
-                    Console.WriteLine("Client getrennt.");
                 }
             }
             catch (Exception ex)
