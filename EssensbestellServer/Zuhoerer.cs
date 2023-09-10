@@ -15,15 +15,10 @@ namespace EssensbestellServer
 
         public void start()
 		{
-            // IP-Adresse und Portnummer, an die der Server gebunden werden soll
-            string ipAddress = "127.0.0.1"; // Loopback-Adresse für lokale Tests
-            int port = 12345; // Portnummer, die du verwenden möchtest
-
-            // Erstelle eine Endpunkt-Adresse, an die der Server gebunden wird
+            string ipAddress = "127.0.0.1"; 
+            int port = 12345;
             IPAddress localAddr = IPAddress.Parse(ipAddress);
             IPEndPoint endPoint = new IPEndPoint(localAddr, port);
-
-            // Erstelle einen TCP-Listener
             TcpListener listener = new TcpListener(endPoint);
 
             try
@@ -47,8 +42,7 @@ namespace EssensbestellServer
                     while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         string nachricht = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                        warteschlage.Enqueue(new Tuple<string, TcpClient>(nachricht.Trim(), client));
-                        Console.WriteLine("Nachricht vom Client: "+nachricht);
+                        warteschlage.Enqueue(new Tuple<string, TcpClient>(nachricht.Trim(), client));      
                     }
                 }
             }

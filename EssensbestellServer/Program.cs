@@ -18,9 +18,6 @@ class TCPServer
         Zuhoerer zuhoerer = new Zuhoerer(nachrichten);
         zuhoerer.start();
 
-      
-
-
     }
 
     static void DoWork(Queue<Tuple<String, TcpClient>> nachrichten) {
@@ -42,11 +39,24 @@ class TCPServer
             }
             // Deserialisieren Sie den JSON-String in ein JSON-Objekt
             // Deserialisieren Sie den JSON-String in ein JSON-Objekt
-           
+            try
+            {
                 JsonNachricht jsonNachricht = new JsonNachricht();
                 jsonNachricht.ausgabe(nachricht);
+                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                {
+                    nachricht.Item2.Close();
+                }
+            }
+
+            catch (Exception ex)
+            {
+
+            }
+
+
             
-            nachricht.Item2.Close();
+
         }
 
     }

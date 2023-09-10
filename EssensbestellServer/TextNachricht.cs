@@ -19,15 +19,8 @@ namespace EssensbestellServer
 		public void ausgabe(Tuple<String, TcpClient> nachricht)
 		{
             DtoNachricht dtoNachricht = new DtoNachricht();
-            String result = Verstecker.getInstance().gibPublic();
-            result = Convert.ToBase64String(Encoding.ASCII.GetBytes(result));
-            dtoNachricht.aktion = "rsa";
-            dtoNachricht.data = result;
-            string json = JsonSerializer.Serialize(dtoNachricht);
-            TcpClient client = nachricht.Item2;
-            byte[] data = Encoding.ASCII.GetBytes(json);
-            var stream = client.GetStream();
-            stream.Write(data, 0, data.Length);
+            Console.WriteLine("TextNachricht Ausgabe");
+ 
         }
 	}
 
@@ -37,34 +30,21 @@ namespace EssensbestellServer
         {
 			try
 			{
+                Console.WriteLine("JsonNachricht Ausgabe");
                 JsonDocument json = JsonDocument.Parse(nachricht.Item1);
                 JsonElement wurzel = json.RootElement;
-                Console.WriteLine(nachricht);
+                JsonElement aktionsKnoten = wurzel.GetProperty("aktion");
+                String aktion = aktionsKnoten.GetString()!;
+                Console.WriteLine(aktion);
             }
 			catch(Exception e)
 			{
-				base.ausgabe(nachricht);
+  
+                base.ausgabe(nachricht);
 			}
 
         }
     }
 
-    public class VerschlusselteNachricht : JsonNachricht
-    {
-        public void ausgabe(Tuple<String, TcpClient> nachricht)
-        {
-            try
-            {
-                byte[] b =  Convert.FromBase64String(nachricht.Item1);
-                String msg = Verstecker.getInstance().entschluessel(b);            
-                Console.WriteLine(msg);
-            }
-            catch (Exception e)
-            {
-                base.ausgabe(nachricht);
-            }
-
-        }
-    }
 }
 

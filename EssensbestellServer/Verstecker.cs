@@ -8,8 +8,8 @@ namespace EssensbestellServer
     {
         private static Verstecker verstecker;
         private string privaterSchluessel;
-        private string publicSchluessel;
-        public String gibPublic()
+        private byte[] publicSchluessel;
+        public byte[] gibPublic()
         {
             return publicSchluessel;
         }
@@ -21,7 +21,8 @@ namespace EssensbestellServer
 
                 // Exportieren des privaten Schlüssels im XML-Format (nur wenn erforderlich)
                 privaterSchluessel = rsa.ToXmlString(true); // true gibt den privaten Schlüssel zurück
-                publicSchluessel = rsa.ExportRSAPublicKeyPem();
+
+                publicSchluessel = rsa.ExportRSAPublicKey();
             }
         }
         public static Verstecker getInstance()

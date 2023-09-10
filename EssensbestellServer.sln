@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 25.0.1705.6
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssensbestellServer", "EssensbestellServer\EssensbestellServer.csproj", "{A41953FF-9D86-487B-8813-0FC3AA3DCC5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EssensbestellServer", "EssensbestellServer\EssensbestellServer.csproj", "{A41953FF-9D86-487B-8813-0FC3AA3DCC5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\TestClient.csproj", "{D71E711A-6FB3-4098-9DD5-3DE556C88217}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A41953FF-9D86-487B-8813-0FC3AA3DCC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A41953FF-9D86-487B-8813-0FC3AA3DCC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A41953FF-9D86-487B-8813-0FC3AA3DCC5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D71E711A-6FB3-4098-9DD5-3DE556C88217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D71E711A-6FB3-4098-9DD5-3DE556C88217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D71E711A-6FB3-4098-9DD5-3DE556C88217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D71E711A-6FB3-4098-9DD5-3DE556C88217}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
