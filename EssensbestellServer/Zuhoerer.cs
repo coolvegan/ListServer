@@ -71,24 +71,48 @@ namespace EssensbestellServer
 
                         if (nachricht.StartsWith("ADD:"))
                         {
-                            string[] teile = nachricht.Substring(4).Split(';');
-                            if (teile.Length >= 3)
+                            try
                             {
-                                DateTime datum = DateTime.Parse(teile[0]);
-                                string beschreibung = teile[1];
-                                TimeSpan uhrzeit = TimeSpan.Parse(teile[2]);
-                                Essenstermin neuerTermin = new Essenstermin(datum, beschreibung, uhrzeit);
-                                TerminHinzufuegen(neuerTermin);
-                                string antwort = "Termin erfolgreich hinzugefügt!";
+                                string[] teile = nachricht.Substring(4).Split(';');
+                                if (teile.Length >= 3)
+                                {
+                                    DateTime datum = DateTime.Parse(teile[0]);
+                                    string beschreibung = teile[1];
+                                    TimeSpan uhrzeit = TimeSpan.Parse(teile[2]);
+                                    Essenstermin neuerTermin = new Essenstermin(datum, beschreibung, uhrzeit);
+                                    TerminHinzufuegen(neuerTermin);
+                                    string antwort = "SUCCESS:Termin erfolgreich hinzugefügt!";
+                                    byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
+                                    stream.Write(antwortBytes, 0, antwortBytes.Length);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                string antwort = "ERROR:" + ex.Message;
                                 byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
                                 stream.Write(antwortBytes, 0, antwortBytes.Length);
                             }
                         }
                         else if (nachricht.StartsWith("DELETE:"))
                         {
-                            DateTime datum = DateTime.Parse(nachricht.Substring(7));
-                            TerminLoeschen(datum);
-                            string antwort = "Termin erfolgreich gelöscht!";
+                            try
+                            {
+                                DateTime datum = DateTime.Parse(nachricht.Substring(7));
+                                TerminLoeschen(datum);
+                                string antwort = "SUCCESS:Termin erfolgreich gelöscht!";
+                                byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
+                                stream.Write(antwortBytes, 0, antwortBytes.Length);
+                            }
+                            catch (Exception ex)
+                            {
+                                string antwort = "ERROR:" + ex.Message;
+                                byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
+                                stream.Write(antwortBytes, 0, antwortBytes.Length);
+                            }
+                        }
+                        else
+                        {
+                            string antwort = "ERROR:Unbekannte Anfrage.";
                             byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
                             stream.Write(antwortBytes, 0, antwortBytes.Length);
                         }
