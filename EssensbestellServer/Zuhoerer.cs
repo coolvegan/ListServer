@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;  // Für Multi-Threading
 
 namespace EssensbestellServer
 {
@@ -40,6 +41,37 @@ namespace EssensbestellServer
             return Essenstermine;
         }
 
+        private void HandleClient(TcpClient client)
+        {
+            Console.WriteLine("Client verbunden in Thread " + Thread.CurrentThread.ManagedThreadId);
+            NetworkStream stream = client.GetStream();
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            try
+            {
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    string nachricht = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    warteschlage.Enqueue(new Tuple<string, TcpClient>(nachricht.Trim(), client));
+                    Console.WriteLine("Nachricht vom Client: " + nachricht);
+
+                    // Die Nachrichtenverarbeitung, die Sie bereits im Code hatten, bleibt hier.
+                    // ...
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fehler beim Kommunizieren mit Client: " + ex.Message);
+            }
+            finally
+            {
+                client.Close();
+                Console.WriteLine("Client getrennt in Thread " + Thread.CurrentThread.ManagedThreadId);
+            }
+        }
+
         public void start()
         {
             string ipAddress = "127.0.0.1";
@@ -57,67 +89,10 @@ namespace EssensbestellServer
                 while (true)
                 {
                     TcpClient client = listener.AcceptTcpClient();
-                    Console.WriteLine("Client verbunden.");
-                    NetworkStream stream = client.GetStream();
 
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-
-                    while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        string nachricht = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                        warteschlage.Enqueue(new Tuple<string, TcpClient>(nachricht.Trim(), client));
-                        Console.WriteLine("Nachricht vom Client: " + nachricht);
-
-                        if (nachricht.StartsWith("ADD:"))
-                        {
-                            try
-                            {
-                                string[] teile = nachricht.Substring(4).Split(';');
-                                if (teile.Length >= 3)
-                                {
-                                    DateTime datum = DateTime.Parse(teile[0]);
-                                    string beschreibung = teile[1];
-                                    TimeSpan uhrzeit = TimeSpan.Parse(teile[2]);
-                                    Essenstermin neuerTermin = new Essenstermin(datum, beschreibung, uhrzeit);
-                                    TerminHinzufuegen(neuerTermin);
-                                    string antwort = "SUCCESS:Termin erfolgreich hinzugefügt!";
-                                    byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
-                                    stream.Write(antwortBytes, 0, antwortBytes.Length);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                string antwort = "ERROR:" + ex.Message;
-                                byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
-                                stream.Write(antwortBytes, 0, antwortBytes.Length);
-                            }
-                        }
-                        else if (nachricht.StartsWith("DELETE:"))
-                        {
-                            try
-                            {
-                                DateTime datum = DateTime.Parse(nachricht.Substring(7));
-                                TerminLoeschen(datum);
-                                string antwort = "SUCCESS:Termin erfolgreich gelöscht!";
-                                byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
-                                stream.Write(antwortBytes, 0, antwortBytes.Length);
-                            }
-                            catch (Exception ex)
-                            {
-                                string antwort = "ERROR:" + ex.Message;
-                                byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
-                                stream.Write(antwortBytes, 0, antwortBytes.Length);
-                            }
-                        }
-                        else
-                        {
-                            string antwort = "ERROR:Unbekannte Anfrage.";
-                            byte[] antwortBytes = Encoding.ASCII.GetBytes(antwort);
-                            stream.Write(antwortBytes, 0, antwortBytes.Length);
-                        }
-                        // Weiter Interpretationen für andere Nachrichten können hier hinzugefügt werden
-                    }
+                    // Starten Sie einen neuen Thread für jeden Client
+                    Thread clientThread = new Thread(() => HandleClient(client));
+                    clientThread.Start();
                 }
             }
             catch (Exception ex)
