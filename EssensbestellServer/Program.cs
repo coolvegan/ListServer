@@ -33,7 +33,7 @@ class TCPServer
             }
 
             Tuple<string, TcpClient> nachricht;
-            lock (nachrichten)
+            lock (nachrichten) 
             {
                 nachricht = nachrichten.Dequeue();
             }
@@ -61,3 +61,4 @@ class TCPServer
 
     }
 }
+
